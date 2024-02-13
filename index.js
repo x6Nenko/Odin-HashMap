@@ -1,6 +1,8 @@
 class HashMap {
     constructor() {
         this.bucketSize = 16;
+        this.usedBuckets = 0;
+        this.loadFactor = 0.75;
         this.buckets = new Array(this.bucketSize).fill(null).map(() => []);
     };
 
@@ -12,8 +14,102 @@ class HashMap {
             hashCode = primeNumber * hashCode + key.charCodeAt(i);
         }
         
-        return hashCode;
+        return hashCode % this.bucketSize;
     } 
+
+    checkLoadFactor() {
+        if ((this.usedBuckets / this.bucketSize) > this.loadFactor) {
+            const oldBuckets = this.buckets;
+            this.bucketSize *= 2;
+            this.buckets = new Array(this.bucketSize).fill(null).map(() => []);
+
+            // Transfer existing elements to new buckets
+            for (const bucket of oldBuckets) {
+                for (const [key, value] of bucket) {
+                    const newIndex = this.hash(key);
+                    this.buckets[newIndex].push([key, value]);
+                }
+            };
+        };
+    };
+
+    set(key, value) {
+        const index = this.hash(key);
+        const bucket = this.buckets[index];
+
+        if (bucket.length > 0) {
+            for (let j = 0; j < bucket.length; j++) {
+                if (bucket[j][0] === key) {
+                    // The same key, just update the value
+                    bucket[j][1] = value;
+                    return;
+                };
+            };
+        };
+         
+        // Push new key-value pairs
+        bucket.push([key, value]);
+        this.usedBuckets ++;
+
+        this.checkLoadFactor();
+    };
+
+    get(key) {
+        const index = this.hash(key);
+        const bucket = this.buckets[index];
+
+        if (bucket.length > 0) {
+            for (let j = 0; j < bucket.length; j++) {
+                if (bucket[j][0] === key) {
+                    return bucket[j][1];
+                };
+            };
+        };
+
+        return null;
+    };
+
+    has(key) {
+        const index = this.hash(key);
+        const bucket = this.buckets[index];
+
+        if (bucket.length > 0) {
+            for (let j = 0; j < bucket.length; j++) {
+                if (bucket[j][0] === key) {
+                    return true;
+                };
+            };
+        };
+
+        return false;
+    };
+
+    remove(key) {
+        const index = this.hash(key);
+        const bucket = this.buckets[index];
+
+        if (bucket.length > 0) {
+            for (let j = 0; j < bucket.length; j++) {
+                if (bucket[j][0] === key) {
+                    console.log(this.buckets);
+                    bucket.splice(j, 1);
+                    console.log(this.buckets);
+                    return true;
+                };
+            };
+        };
+        // console.log(this.buckets);
+        return false;
+    };
 };
 
 const hashMap = new HashMap();
+
+console.log("Set: " + hashMap.set("Maximilian", "New value"));
+console.log("Get(yes): " + hashMap.get("Maximilian"));
+console.log("Get(no): " + hashMap.get("Maximiliannn"));
+console.log("Has(yes): " + hashMap.has("Maximilian"));
+console.log("Has(no): " + hashMap.has("Maximiliannn"));
+console.log("Remove(yes): " + hashMap.remove("Maximilian"));
+console.log("Set: " + hashMap.set("Maximilian", "New value"));
+console.log("Remove(no): " + hashMap.remove("Maximiliannn"));
