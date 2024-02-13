@@ -91,15 +91,59 @@ class HashMap {
         if (bucket.length > 0) {
             for (let j = 0; j < bucket.length; j++) {
                 if (bucket[j][0] === key) {
-                    console.log(this.buckets);
                     bucket.splice(j, 1);
-                    console.log(this.buckets);
+                    this.usedBuckets --;
                     return true;
                 };
             };
         };
-        // console.log(this.buckets);
+
         return false;
+    };
+
+    length() {
+        return this.buckets.reduce((total, bucket) => total + bucket.length, 0);
+    };
+
+    clear() {
+        this.buckets = new Array(this.bucketSize).fill(null).map(() => []);
+        this.usedBuckets = 0;
+    };
+ 
+    keys() {
+        const keysArr = [];
+
+        for (const bucket of this.buckets) {
+            for (const [key, value] of bucket) {
+                keysArr.push(key);
+            }
+        };
+
+        return keysArr;
+    };
+
+    values() {
+        const valuesArr = [];
+
+        for (const bucket of this.buckets) {
+            for (const [key, value] of bucket) {
+                valuesArr.push(value);
+            }
+        };
+
+        return valuesArr;
+    };
+
+    entries() {
+        const keyValuePairsArr = [];
+
+        for (const bucket of this.buckets) {
+            for (const [key, value] of bucket) {
+                keyValuePairsArr.push([key, value]);
+            }
+        };
+
+        return keyValuePairsArr;
     };
 };
 
@@ -113,3 +157,13 @@ console.log("Has(no): " + hashMap.has("Maximiliannn"));
 console.log("Remove(yes): " + hashMap.remove("Maximilian"));
 console.log("Set: " + hashMap.set("Maximilian", "New value"));
 console.log("Remove(no): " + hashMap.remove("Maximiliannn"));
+console.log("Length(1) : " + hashMap.length());
+console.log("Set: " + hashMap.set("Maximiliannn", "New value"));
+console.log("Length(2) : " + hashMap.length());
+console.log("Clear: " + hashMap.clear());
+console.log("Length(0) : " + hashMap.length());
+console.log("Set: " + hashMap.set("Maximilian", "New value"));
+console.log("Set: " + hashMap.set("Maximiliannn", "New value"));
+console.log("Keys: " + hashMap.keys());
+console.log("Values: " + hashMap.values());
+console.log("Entries: " + hashMap.entries());
